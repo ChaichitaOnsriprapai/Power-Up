@@ -10,38 +10,113 @@
 </head>
 
 <body>
+  <main>
 
-    <main>
+    <section class="container mt-5">
+      <div class="row g-5">
 
-        <section class="container mt-5 shadow p-4 rounded bg-light">
+        <div class="col-lg-6">
+          <section class="shadow p-4 rounded-4 bg-light h-100">
             <h1 class="text-center mb-4">Create Portfolio</h1>
-            <div class="row justify-content-center">
-                <div class="col-lg-6">
-                    <form id="create-portfolio-form">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label for="what-i-enjoy" class="form-label">What I enjoy</label>
-                            <input class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label for="what-ive-tried" class="form-label">What I've Tried</label>
-                            <input class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label for="what-i-currious-about" class="form-label">What I Currious About</label>
-                            <input class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Create Portfolio</button>
-                    </form>
-                </div>
-            </div>
-        </section>
+            <form id="create-portfolio-form">
+              <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" class="form-control">
+              </div>
+              <div class="mb-3">
+                <label for="what-i-enjoy" class="form-label">What I Enjoy</label>
+                <input type="text" id="what-i-enjoy" class="form-control">
+              </div>
+              <div class="mb-3">
+                <label for="what-ive-tried" class="form-label">What I've Tried</label>
+                <input type="text" id="what-ive-tried" class="form-control">
+              </div>
+              <div class="mb-5">
+                <label for="what-im-curious-about" class="form-label">What I'm Curious About</label>
+                <input type="text" id="what-im-curious-about" class="form-control">
+              </div>
+              <button type="submit" class="btn btn-primary w-100 mb-3">Create Portfolio</button>
+            </form>
+          </section>
+        </div>
 
-    </main>
+        <div class="col-lg-6">
+          <section class="shadow p-4 rounded-4 bg-light h-100">
+            <h1 class="text-center mb-4">Select Profile</h1>
+            <div id="profile-list"></div>
+          </section>
+        </div>
 
+      </div>
+    </section>
+
+    <section class="container mt-5 mb-5 shadow p-4 rounded-4 bg-light">
+      <h1 class="text-center mb-4">Add an Item</h1>
+      <p id="item-form-note" class="text-center"></p>
+
+      <form id="item-form" novalidate>
+        <fieldset id="item-fieldset">
+
+          <div class="mb-3">
+            <label for="item-title" class="form-label">Title</label>
+            <input type="text" id="item-title" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="item-type" class="form-label">Type</label>
+            <input type="text" id="item-type" class="form-control">
+            <div class="form-text">Example: Course Assignment</div>
+          </div>
+          <div class="mb-3">
+            <label for="item-date" class="form-label">Date</label>
+            <input type="date" id="item-date" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="item-role" class="form-label">Role</label>
+            <input type="text" id="item-role" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="item-description" class="form-label">Description</label>
+            <textarea id="item-description" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="mb-5">
+            <label for="item-skills" class="form-label">Skills</label>
+            <input type="text" id="item-skills" class="form-control">
+            <div class="form-text">Separate with commas, example: HTML, CSS</div>
+          </div>
+
+          <h3 class="mb-4">Reflection</h3>
+          <div class="mb-3">
+            <label for="item-what-i-did" class="form-label">What I did</label>
+            <textarea id="item-what-i-did" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="item-what-i-learned" class="form-label">What I learned</label>
+            <textarea id="item-what-i-learned" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="item-challenge" class="form-label">Challenge</label>
+            <textarea id="item-challenge" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="item-next-step" class="form-label">Next step</label>
+            <textarea id="item-next-step" class="form-control" rows="2"></textarea>
+          </div>
+
+          <div class="mb-5">
+            <label for="item-evidence" class="form-label">Evidence URLs</label>
+            <textarea id="item-evidence" class="form-control" rows="3"></textarea>
+            <div class="form-text">One per line, must start with http:// or https://</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 mb-3">Save Item</button>
+        </fieldset>
+      </form>
+
+      <div id="item-errors" class="errors text-danger" role="alert"></div>
+      <p id="item-success" class="success text-success"></p>
+    </section>
+
+  </main>
 </body>
 
 </html>
