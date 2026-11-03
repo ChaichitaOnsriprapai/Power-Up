@@ -1,24 +1,23 @@
 const $ = (id) => document.getElementById(id);
-const profiles = [];
-let activeProfileId = null;
-const createProfile = $("create-profile-form");
+const profiles = []; 
+let activeProfileId = null; 
+const createProfile = $("create-profile-form"); 
 
 function renderProfileList() {
-  const profileList = $("profile-list");
-  profileList.innerHTML = "";
+  const profileList = $("profile-list"); 
+  profileList.innerHTML = ""; 
 
   if (profiles.length == 0) {
     profileList.innerHTML = '<p class="text-muted text-center">ยังไม่มีโปรไฟล์ กรุณาสร้างโปรไฟล์ก่อน</p>';
     if ($("item-form-note")) {
       $("item-form-note").textContent = "กรุณาสร้างหรือเลือกโปรไฟล์ก่อนเพิ่มผลงาน";
     }
-    return;
+    return; 
   }
 
   profiles.forEach((profile) => {
     const button = document.createElement("button");
     button.type = "button";
-
     const isActive = profile.id == activeProfileId;
 
     button.className = isActive
@@ -40,7 +39,7 @@ function renderProfileList() {
     profileList.appendChild(button);
   });
 
-  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+  const currentProfile = profiles.find((p) => p.id == activeProfileId); 
   if ($("item-form-note") && currentProfile) {
     $("item-form-note").textContent = "กำลังจัดการโปรไฟล์: " + currentProfile.name;
   }
@@ -74,3 +73,51 @@ createProfile.addEventListener("submit", function (event) {
 });
 
 renderProfileList();
+
+const itemForm = $("item-form");
+
+itemForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+  if (currentProfile == null) {
+    alert("กรุณาสร้างหรือเลือกโปรไฟล์ก่อนเพิ่มผลงาน");
+    return;
+  }
+
+  const title = $("item-title").value.trim();
+  const date = $("item-date").value.trim();
+  const type = $("item-type").value.trim();
+  const role = $("item-role").value.trim();
+  const description = $("item-description").value.trim();
+
+  const skills = $("item-skills").value.split(",").map(skill => skill.trim());
+
+  const reflection = {
+    whatIDid: $("item-what-i-did").value.trim(),
+    whatILearned: $("item-what-i-learned").value.trim(),
+    challenge: $("item-challenge").value.trim(),
+    nextStep: $("item-next-step").value.trim()
+  };
+  const evidence = $("item-evidence").value.split("\n").map(url => url.trim());
+
+  const itemId = "item_" + String(currentProfile.items.length + 1).padStart(3, "0");
+
+  const itemData = {
+    id: itemId,
+    title: title,
+    date: date,
+    type: type,
+    role: role,
+    description: description,
+    skills: skills,
+    reflection: reflection,
+    evidence: evidence
+  };
+
+  currentProfile.items.push(itemData);
+  console.log("บันทึกผลงานสำเร็จ:", itemData);
+  console.log("ผลงานทั้งหมดของโปรไฟล์ปัจจุบัน:", currentProfile.items);
+  itemForm.reset();
+
+});
