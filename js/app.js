@@ -1,23 +1,24 @@
 const $ = (id) => document.getElementById(id);
-const profiles = []; 
-let activeProfileId = null; 
-const createProfile = $("create-profile-form"); 
+const profiles = [];
+let activeProfileId = null;
+const createProfile = $("create-profile-form");
 
 function renderProfileList() {
-  const profileList = $("profile-list"); 
-  profileList.innerHTML = ""; 
+  const profileList = $("profile-list");
+  profileList.innerHTML = "";
 
   if (profiles.length == 0) {
     profileList.innerHTML = '<p class="text-muted text-center">ยังไม่มีโปรไฟล์ กรุณาสร้างโปรไฟล์ก่อน</p>';
     if ($("item-form-note")) {
       $("item-form-note").textContent = "กรุณาสร้างหรือเลือกโปรไฟล์ก่อนเพิ่มผลงาน";
     }
-    return; 
+    return;
   }
 
   profiles.forEach((profile) => {
     const button = document.createElement("button");
     button.type = "button";
+
     const isActive = profile.id == activeProfileId;
 
     button.className = isActive
@@ -39,7 +40,7 @@ function renderProfileList() {
     profileList.appendChild(button);
   });
 
-  const currentProfile = profiles.find((p) => p.id == activeProfileId); 
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
   if ($("item-form-note") && currentProfile) {
     $("item-form-note").textContent = "กำลังจัดการโปรไฟล์: " + currentProfile.name;
   }
@@ -91,7 +92,7 @@ itemForm.addEventListener("submit", function (event) {
   const role = $("item-role").value.trim();
   const description = $("item-description").value.trim();
 
-  const skills = $("item-skills").value.split(",").map(skill => skill.trim());
+  const skills = $("item-skills").value.split(",").map(skill => skill.trim()).filter(skill => skill != "");
 
   const reflection = {
     whatIDid: $("item-what-i-did").value.trim(),
@@ -99,7 +100,30 @@ itemForm.addEventListener("submit", function (event) {
     challenge: $("item-challenge").value.trim(),
     nextStep: $("item-next-step").value.trim()
   };
-  const evidence = $("item-evidence").value.split("\n").map(url => url.trim());
+
+  const evidence = $("item-evidence").value.split("\n").map(url => url.trim()).filter(url => url != "");
+
+  if (title == "" || date == "" || type == "" || role == "" || description == "") {
+    $("item-errors").textContent = "กรุณากรอกข้อมูลให้ครบถ้วน";
+    $("item-success").textContent = "";
+    return;
+  }
+
+  if (evidence.length == 0) {
+    $("item-errors").textContent = "กรุณากรอก Evidence URL อย่างน้อย 1 รายการ";
+    $("item-success").textContent = "";
+    return;
+  }
+
+  const hasInvalidUrl = evidence.some(url => !url.startsWith("http://") && !url.startsWith("https://"));
+  if (hasInvalidUrl) {
+    $("item-errors").textContent = "กรุณากรอก URL ที่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)";
+    $("item-success").textContent = "";
+    return;
+  }
+
+  $("item-errors").textContent = "";
+  $("item-success").textContent = "บันทึกผลงานสำเร็จ!";
 
   const itemId = "item_" + String(currentProfile.items.length + 1).padStart(3, "0");
 
@@ -119,5 +143,4 @@ itemForm.addEventListener("submit", function (event) {
   console.log("บันทึกผลงานสำเร็จ:", itemData);
   console.log("ผลงานทั้งหมดของโปรไฟล์ปัจจุบัน:", currentProfile.items);
   itemForm.reset();
-
 });
