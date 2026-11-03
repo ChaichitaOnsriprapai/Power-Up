@@ -44,6 +44,9 @@ function renderProfileList() {
   if ($("item-form-note") && currentProfile) {
     $("item-form-note").textContent = "กำลังจัดการโปรไฟล์: " + currentProfile.name;
   }
+  renderItemList();
+  if ($("item-errors")) $("item-errors").textContent = "";
+  if ($("item-success")) $("item-success").textContent = "";
 }
 
 createProfile.addEventListener("submit", function (event) {
@@ -72,6 +75,39 @@ createProfile.addEventListener("submit", function (event) {
   renderProfileList();
   createProfile.reset();
 });
+
+function renderItemList() {
+  const itemList = $("item-list");
+  if (!itemList) return;
+  itemList.innerHTML = "";
+
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+
+  if (!currentProfile || currentProfile.items.length === 0) {
+    itemList.innerHTML = '<p class="text-muted text-center">ยังไม่มีผลงานในโปรไฟล์นี้</p>';
+    return;
+  }
+
+  currentProfile.items.forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "card mb-3 shadow-sm";
+    card.innerHTML = `
+      <div class="card-body">
+        <h5 class="card-title">${item.title} <span class="badge bg-info text-dark">${item.type}</span></h5>
+        <h6 class="card-subtitle mb-2 text-muted">Role: ${item.role} | Date: ${item.date}</h6>
+        <p class="card-text">${item.description}</p>
+        <div class="mb-2">
+          <strong>Skills:</strong> ${item.skills.map(s => `<span class="badge bg-secondary me-1">${s}</span>`).join("")}
+        </div>
+        <div class="small text-muted mb-2">
+          <strong>Evidence:</strong>
+          <ul>${item.evidence.map(url => `<li><a href="${url}" target="_blank">${url}</a></li>`).join("")}</ul>
+        </div>
+      </div>
+    `;
+    itemList.appendChild(card);
+  });
+}
 
 renderProfileList();
 
@@ -142,5 +178,6 @@ itemForm.addEventListener("submit", function (event) {
   currentProfile.items.push(itemData);
   console.log("บันทึกผลงานสำเร็จ:", itemData);
   console.log("ผลงานทั้งหมดของโปรไฟล์ปัจจุบัน:", currentProfile.items);
+  renderItemList();
   itemForm.reset();
 });
