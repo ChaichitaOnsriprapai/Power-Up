@@ -122,6 +122,15 @@ createProfile.addEventListener("submit", function (event) {
   const whatIveTried = $("what-ive-tried").value.trim();
   const whatImCuriousAbout = $("what-im-curious-about").value.trim();
 
+  if (name == "" || whatIEnjoy == "" || whatIveTried == "" || whatImCuriousAbout == "") {
+    $("profile-errors").textContent = "กรุณากรอกข้อมูลโปรไฟล์ให้ครบทุกช่อง";
+    $("profile-success").textContent = "";
+    return;
+  }
+
+  $("profile-errors").textContent = "";
+  $("profile-success").textContent = "";
+
   const profileData = {
     id: "profile_" + String(profiles.length + 1).padStart(3, "0"),
     name: name,
@@ -140,6 +149,7 @@ createProfile.addEventListener("submit", function (event) {
 
   renderProfileList();
   createProfile.reset();
+  $("profile-success").textContent = "บันทึกโปรไฟล์สำเร็จ!";
 });
 
 const itemForm = $("item-form");
@@ -170,8 +180,13 @@ itemForm.addEventListener("submit", function (event) {
 
   const evidence = $("item-evidence").value.split("\n").map(url => url.trim()).filter(url => url != "");
 
-  if (title == "" || date == "" || type == "" || role == "" || description == "") {
-    $("item-errors").textContent = "กรุณากรอกข้อมูลให้ครบถ้วน";
+  const hasMissingInformation =
+    title == "" || date == "" || type == "" || role == "" || description == "" ||
+    skills.length == 0 || reflection.whatIDid == "" || reflection.whatILearned == "" ||
+    reflection.challenge == "" || reflection.nextStep == "";
+
+  if (hasMissingInformation) {
+    $("item-errors").textContent = "กรุณากรอกข้อมูลให้ครบทุกช่อง";
     $("item-success").textContent = "";
     return;
   }

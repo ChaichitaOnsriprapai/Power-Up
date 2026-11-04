@@ -20,8 +20,8 @@
             <h1 class="text-center mb-4">Create Profile</h1>
             <form id="create-profile-form">
               <div class="mb-3">
-                <label for="name" class="form-label">Name *</label>
-                <input type="text" id="name" class="form-control" required>
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" class="form-control">
               </div>
               <div class="mb-3">
                 <label for="what-i-enjoy" class="form-label">What I Enjoy</label>
@@ -36,6 +36,8 @@
                 <input type="text" id="what-im-curious-about" class="form-control">
               </div>
               <button type="submit" id="create-profile" class="btn btn-primary w-100 mb-3">Create Profile</button>
+              <p id="profile-errors" class="errors text-danger" role="alert"></p>
+              <p id="profile-success" class="success text-success"></p>
             </form>
           </section>
         </div>
@@ -117,7 +119,7 @@
         Add Test Item
       </button>
 
-      <div id="item-errors" class="errors text-danger" role="alert"></div>
+      <p id="item-errors" class="errors text-danger" role="alert"></p>
       <p id="item-success" class="success text-success"></p>
     </section>
 
