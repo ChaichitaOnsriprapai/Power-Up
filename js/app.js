@@ -12,6 +12,7 @@ function renderProfileList() {
     if ($("item-form-note")) {
       $("item-form-note").textContent = "กรุณาสร้างหรือเลือกโปรไฟล์ก่อนเพิ่มผลงาน";
     }
+    renderItemList();
     return;
   }
 
@@ -42,8 +43,10 @@ function renderProfileList() {
 
   const currentProfile = profiles.find((p) => p.id == activeProfileId);
   if ($("item-form-note") && currentProfile) {
-    $("item-form-note").textContent = "กำลังจัดการโปรไฟล์: " + currentProfile.name;
+    $("item-form-note").innerHTML =
+      "กำลังจัดการโปรไฟล์: <strong>" + currentProfile.name + "</strong>";
   }
+  renderItemList();
 }
 
 createProfile.addEventListener("submit", function (event) {
@@ -142,5 +145,80 @@ itemForm.addEventListener("submit", function (event) {
   currentProfile.items.push(itemData);
   console.log("บันทึกผลงานสำเร็จ:", itemData);
   console.log("ผลงานทั้งหมดของโปรไฟล์ปัจจุบัน:", currentProfile.items);
+  renderItemList();
   itemForm.reset();
 });
+
+// Script สำหรับกดปุ่มเพื่อเพิ่มผลงานตัวอย่างเข้าโปรไฟล์ Active ใช้ทดสอบการแสดงผล made by AI!!!
+$("add-test-item").addEventListener("click", function () {
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+  if (currentProfile == null) {
+    alert("กรุณาสร้างหรือเลือกโปรไฟล์ก่อนเพิ่มผลงานทดสอบ");
+    return;
+  }
+
+  const today = new Date();
+  const todayString = today.getFullYear() + "-" +
+    String(today.getMonth() + 1).padStart(2, "0") + "-" +
+    String(today.getDate()).padStart(2, "0");
+
+  const testItem = {
+    id: "item_" + String(currentProfile.items.length + 1).padStart(3, "0"),
+    title: "Test Portfolio Item " + String(currentProfile.items.length + 1),
+    type: "Test Activity",
+    date: todayString,
+    role: "Student",
+    description: "ผลงานตัวอย่างที่เพิ่มด้วยปุ่มทดสอบ",
+    skills: ["HTML", "CSS", "JavaScript"],
+    reflection: {
+      whatIDid: "ทดลองเพิ่มผลงานเข้า Portfolio",
+      whatILearned: "เรียนรู้การแสดงข้อมูลจาก Profile",
+      challenge: "ตรวจสอบว่าผลงานผูกกับโปรไฟล์ที่เลือก",
+      nextStep: "ทดสอบเพิ่มผลงานในโปรไฟล์อื่น"
+    },
+    evidence: ["https://example.com"]
+  };
+
+  currentProfile.items.push(testItem);
+  $("item-errors").textContent = "";
+  $("item-success").textContent = "เพิ่มผลงานทดสอบสำเร็จ!";
+  renderItemList();
+  console.log("เพิ่มผลงานทดสอบ:", testItem);
+});
+
+function renderItemList() {
+  const itemList = $("item-list");
+  itemList.innerHTML = "";
+
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+  if (currentProfile == null || currentProfile.items.length == 0) {
+    itemList.innerHTML = '<p class="text-muted text-center">ยังไม่มีผลงานในโปรไฟล์นี้</p>';
+    return;
+  }
+
+  currentProfile.items.forEach((item) => {
+    itemList.innerHTML += 
+    `<div class="card mb-3">
+      <div class="card-body">
+        <h3 class="mb-3">${item.title}</h3>
+        <p><strong>Date:</strong> ${item.date}</p>
+        <p><strong>Type:</strong> ${item.type}</p>
+        <p><strong>Role:</strong> ${item.role}</p>
+        <p><strong>Description:</strong> ${item.description}</p>
+        <p><strong>Skills:</strong> ${item.skills.join(", ")}</p>
+        <div class="reflection">
+          <h4>Reflection</h4>
+          <p><strong>What I Did:</strong> ${item.reflection.whatIDid}</p>
+          <p><strong>What I Learned:</strong> ${item.reflection.whatILearned}</p>
+          <p><strong>Challenge:</strong> ${item.reflection.challenge}</p>
+          <p><strong>Next Step:</strong> ${item.reflection.nextStep}</p>
+        </div>
+        <div class="evidence">
+          <h4>Evidence</h4>
+          ${item.evidence.map(url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`).join("<br>")}
+        </div>
+      </div>
+      </div>`;
+  });
+}
+
