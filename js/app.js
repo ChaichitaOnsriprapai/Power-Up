@@ -47,6 +47,7 @@ function renderProfileList() {
       "กำลังจัดการโปรไฟล์: <strong>" + currentProfile.name + "</strong>";
   }
   renderItemList();
+  renderProfileInfo();
 }
 
 createProfile.addEventListener("submit", function (event) {
@@ -222,3 +223,20 @@ function renderItemList() {
   });
 }
 
+function renderProfileInfo() {
+  const profileInfo = $("profile-info");
+  profileInfo.innerHTML = "";
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+
+  if (currentProfile) {
+    profileInfo.innerHTML +=
+      `<div class="card mb-3">
+        <div class="card-body">
+        <h2>${currentProfile.name}</h2>
+        <p><strong>What I Enjoy:</strong> ${currentProfile.whatIEnjoy}</p>
+        <p><strong>What I've Tried:</strong> ${currentProfile.whatIveTried}</p>
+        <p><strong>What I'm Curious About:</strong> ${currentProfile.whatImCuriousAbout}</p>
+        </div>
+      </div>`;
+  }
+}
