@@ -1,7 +1,71 @@
 const $ = (id) => document.getElementById(id);
-const profiles = [];
-let activeProfileId = null;
+
+function loadProfiles() {
+  const savedProfiles = localStorage.getItem("profiles");
+  return savedProfiles ? JSON.parse(savedProfiles) : [];
+}
+
+function saveProfiles() {
+  localStorage.setItem("profiles", JSON.stringify(profiles));
+}
+
+const profiles = loadProfiles();
+let activeProfileId = profiles.length > 0 ? profiles[0].id : null;
 const createProfile = $("create-profile-form");
+
+function renderItemList() {
+  const itemList = $("item-list");
+  itemList.innerHTML = "";
+
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+  if (currentProfile == null || currentProfile.items.length == 0) {
+    itemList.innerHTML = '<p class="text-muted text-center">ยังไม่มีผลงานในโปรไฟล์นี้</p>';
+    return;
+  }
+
+  currentProfile.items.forEach((item) => {
+    itemList.innerHTML +=
+    `<div class="card mb-3">
+      <div class="card-body">
+        <h3 class="mb-3">${item.title}</h3>
+        <p><strong>Date:</strong> ${item.date}</p>
+        <p><strong>Type:</strong> ${item.type}</p>
+        <p><strong>Role:</strong> ${item.role}</p>
+        <p><strong>Description:</strong> ${item.description}</p>
+        <p><strong>Skills:</strong> ${item.skills.join(", ")}</p>
+        <div class="reflection">
+          <h4>Reflection</h4>
+          <p><strong>What I Did:</strong> ${item.reflection.whatIDid}</p>
+          <p><strong>What I Learned:</strong> ${item.reflection.whatILearned}</p>
+          <p><strong>Challenge:</strong> ${item.reflection.challenge}</p>
+          <p><strong>Next Step:</strong> ${item.reflection.nextStep}</p>
+        </div>
+        <div class="evidence">
+          <h4>Evidence</h4>
+          ${item.evidence.map(url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`).join("<br>")}
+        </div>
+      </div>
+      </div>`;
+  });
+}
+
+function renderProfileInfo() {
+  const profileInfo = $("profile-info");
+  profileInfo.innerHTML = "";
+  const currentProfile = profiles.find((p) => p.id == activeProfileId);
+
+  if (currentProfile) {
+    profileInfo.innerHTML +=
+      `<div class="card mb-3">
+        <div class="card-body">
+        <h2>${currentProfile.name}</h2>
+        <p><strong>What I Enjoy:</strong> ${currentProfile.whatIEnjoy}</p>
+        <p><strong>What I've Tried:</strong> ${currentProfile.whatIveTried}</p>
+        <p><strong>What I'm Curious About:</strong> ${currentProfile.whatImCuriousAbout}</p>
+        </div>
+      </div>`;
+  }
+}
 
 function renderProfileList() {
   const profileList = $("profile-list");
@@ -68,6 +132,7 @@ createProfile.addEventListener("submit", function (event) {
   };
 
   profiles.push(profileData);
+  saveProfiles();
   activeProfileId = profileData.id;
 
   console.log("บันทึกสำเร็จ:", profileData);
@@ -76,8 +141,6 @@ createProfile.addEventListener("submit", function (event) {
   renderProfileList();
   createProfile.reset();
 });
-
-renderProfileList();
 
 const itemForm = $("item-form");
 
@@ -144,6 +207,7 @@ itemForm.addEventListener("submit", function (event) {
   };
 
   currentProfile.items.push(itemData);
+  saveProfiles();
   console.log("บันทึกผลงานสำเร็จ:", itemData);
   console.log("ผลงานทั้งหมดของโปรไฟล์ปัจจุบัน:", currentProfile.items);
   renderItemList();
@@ -181,62 +245,11 @@ $("add-test-item").addEventListener("click", function () {
   };
 
   currentProfile.items.push(testItem);
+  saveProfiles();
   $("item-errors").textContent = "";
   $("item-success").textContent = "เพิ่มผลงานทดสอบสำเร็จ!";
   renderItemList();
   console.log("เพิ่มผลงานทดสอบ:", testItem);
 });
 
-function renderItemList() {
-  const itemList = $("item-list");
-  itemList.innerHTML = "";
-
-  const currentProfile = profiles.find((p) => p.id == activeProfileId);
-  if (currentProfile == null || currentProfile.items.length == 0) {
-    itemList.innerHTML = '<p class="text-muted text-center">ยังไม่มีผลงานในโปรไฟล์นี้</p>';
-    return;
-  }
-
-  currentProfile.items.forEach((item) => {
-    itemList.innerHTML += 
-    `<div class="card mb-3">
-      <div class="card-body">
-        <h3 class="mb-3">${item.title}</h3>
-        <p><strong>Date:</strong> ${item.date}</p>
-        <p><strong>Type:</strong> ${item.type}</p>
-        <p><strong>Role:</strong> ${item.role}</p>
-        <p><strong>Description:</strong> ${item.description}</p>
-        <p><strong>Skills:</strong> ${item.skills.join(", ")}</p>
-        <div class="reflection">
-          <h4>Reflection</h4>
-          <p><strong>What I Did:</strong> ${item.reflection.whatIDid}</p>
-          <p><strong>What I Learned:</strong> ${item.reflection.whatILearned}</p>
-          <p><strong>Challenge:</strong> ${item.reflection.challenge}</p>
-          <p><strong>Next Step:</strong> ${item.reflection.nextStep}</p>
-        </div>
-        <div class="evidence">
-          <h4>Evidence</h4>
-          ${item.evidence.map(url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`).join("<br>")}
-        </div>
-      </div>
-      </div>`;
-  });
-}
-
-function renderProfileInfo() {
-  const profileInfo = $("profile-info");
-  profileInfo.innerHTML = "";
-  const currentProfile = profiles.find((p) => p.id == activeProfileId);
-
-  if (currentProfile) {
-    profileInfo.innerHTML +=
-      `<div class="card mb-3">
-        <div class="card-body">
-        <h2>${currentProfile.name}</h2>
-        <p><strong>What I Enjoy:</strong> ${currentProfile.whatIEnjoy}</p>
-        <p><strong>What I've Tried:</strong> ${currentProfile.whatIveTried}</p>
-        <p><strong>What I'm Curious About:</strong> ${currentProfile.whatImCuriousAbout}</p>
-        </div>
-      </div>`;
-  }
-}
+renderProfileList();
