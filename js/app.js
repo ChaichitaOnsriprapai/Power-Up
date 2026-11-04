@@ -99,7 +99,6 @@ function renderProfileList() {
     button.addEventListener("click", function () {
       activeProfileId = profile.id;
       renderProfileList();
-      console.log("เลือกโปรไฟล์ปัจจุบัน:", profile);
     });
 
     profileList.appendChild(button);
@@ -110,6 +109,7 @@ function renderProfileList() {
     $("item-form-note").innerHTML =
       "กำลังจัดการโปรไฟล์: <strong>" + currentProfile.name + "</strong>";
   }
+
   renderItemList();
   renderProfileInfo();
 }
@@ -143,9 +143,6 @@ createProfile.addEventListener("submit", function (event) {
   profiles.push(profileData);
   saveProfiles();
   activeProfileId = profileData.id;
-
-  console.log("บันทึกสำเร็จ:", profileData);
-  console.log("รายชื่อทั้งหมด:", profiles);
 
   renderProfileList();
   createProfile.reset();
@@ -205,7 +202,7 @@ itemForm.addEventListener("submit", function (event) {
   }
 
   $("item-errors").textContent = "";
-  $("item-success").textContent = "บันทึกผลงานสำเร็จ!";
+  $("item-success").textContent = "เพิ่มผลงานของคุณ " + currentProfile.name + " สำเร็จ!";
 
   const itemId = "item_" + String(currentProfile.items.length + 1).padStart(3, "0");
 
@@ -223,13 +220,13 @@ itemForm.addEventListener("submit", function (event) {
 
   currentProfile.items.push(itemData);
   saveProfiles();
-  console.log("บันทึกผลงานสำเร็จ:", itemData);
-  console.log("ผลงานทั้งหมดของโปรไฟล์ปัจจุบัน:", currentProfile.items);
   renderItemList();
   itemForm.reset();
 });
 
-// Script สำหรับกดปุ่มเพื่อเพิ่มผลงานตัวอย่างเข้าโปรไฟล์ Active ใช้ทดสอบการแสดงผล made by AI!!!
+renderProfileList();
+
+// temp Script สำหรับกดปุ่มเพื่อเพิ่มผลงานตัวอย่างเข้าโปรไฟล์ Active ใช้ทดสอบการแสดงผล made by AI!!!
 $("add-test-item").addEventListener("click", function () {
   const currentProfile = profiles.find((p) => p.id == activeProfileId);
   if (currentProfile == null) {
@@ -264,7 +261,17 @@ $("add-test-item").addEventListener("click", function () {
   $("item-errors").textContent = "";
   $("item-success").textContent = "เพิ่มผลงานทดสอบสำเร็จ!";
   renderItemList();
-  console.log("เพิ่มผลงานทดสอบ:", testItem);
 });
 
-renderProfileList();
+// temp Script สำหรับลบข้อมูลโปรไฟล์ที่บันทึกไว้เมื่อผู้ใช้กดปุ่มและยืนยัน made by AI!!!
+function clearProfiles() {
+  const confirmed = confirm("ต้องการลบทุกโปรไฟล์และผลงานที่บันทึกไว้หรือไม่?");
+  if (!confirmed) {
+    return;
+  }
+
+  localStorage.removeItem("profiles");
+  location.reload();
+}
+
+$("clear-profiles").addEventListener("click", clearProfiles);

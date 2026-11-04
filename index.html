@@ -46,6 +46,9 @@
           <section class="shadow p-4 rounded-4 bg-light h-100">
             <h1 class="text-center mb-4">Select Profile</h1>
             <div id="profile-list"></div>
+            <button type="button" id="clear-profiles" class="btn btn-outline-danger w-100 mt-3">
+              Clear All Profiles
+            </button>
           </section>
         </div>
 
@@ -53,58 +56,66 @@
     </section>
 
     <section class="container mt-5 mb-5 shadow p-4 rounded-4 bg-light">
-      <h1 class="text-center mb-4">Add an Item</h1>
+      <h1 class="text-center mb-4">Add Portfolio Item</h1>
       <p id="item-form-note" class="text-center"></p>
 
       <form id="item-form" novalidate>
         <fieldset id="item-fieldset">
 
-          <div class="mb-3">
-            <label for="item-title" class="form-label">Title</label>
-            <input type="text" id="item-title" class="form-control">
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+              <label for="item-title" class="form-label">Title</label>
+              <input type="text" id="item-title" class="form-control">
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="item-skills" class="form-label">Skills</label>
+              <input type="text" id="item-skills" class="form-control">
+              <div class="form-text">Separate with commas, example: HTML, CSS</div>
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="item-type" class="form-label">Type</label>
-            <input type="text" id="item-type" class="form-control">
-            <div class="form-text">Example: Course Assignment</div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-md-4">
+              <label for="item-type" class="form-label">Type</label>
+              <input type="text" id="item-type" class="form-control">
+              <div class="form-text">Example: Course Assignment</div>
+            </div>
+            <div class="col-12 col-md-4">
+              <label for="item-date" class="form-label">Date</label>
+              <input type="date" id="item-date" class="form-control">
+            </div>
+            <div class="col-12 col-md-4">
+              <label for="item-role" class="form-label">Role</label>
+              <input type="text" id="item-role" class="form-control">
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="item-date" class="form-label">Date</label>
-            <input type="date" id="item-date" class="form-control">
-          </div>
-          <div class="mb-3">
-            <label for="item-role" class="form-label">Role</label>
-            <input type="text" id="item-role" class="form-control">
-          </div>
-          <div class="mb-3">
+
+          <div class="mb-4">
             <label for="item-description" class="form-label">Description</label>
             <textarea id="item-description" class="form-control" rows="3"></textarea>
           </div>
-          <div class="mb-5">
-            <label for="item-skills" class="form-label">Skills</label>
-            <input type="text" id="item-skills" class="form-control">
-            <div class="form-text">Separate with commas, example: HTML, CSS</div>
-          </div>
 
           <h3 class="mb-4">Reflection</h3>
-          <div class="mb-3">
-            <label for="item-what-i-did" class="form-label">What I did</label>
-            <textarea id="item-what-i-did" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="item-what-i-learned" class="form-label">What I learned</label>
-            <textarea id="item-what-i-learned" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="item-challenge" class="form-label">Challenge</label>
-            <textarea id="item-challenge" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="item-next-step" class="form-label">Next step</label>
-            <textarea id="item-next-step" class="form-control" rows="2"></textarea>
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+              <label for="item-what-i-did" class="form-label">What I did</label>
+              <textarea id="item-what-i-did" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="item-what-i-learned" class="form-label">What I learned</label>
+              <textarea id="item-what-i-learned" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="item-challenge" class="form-label">Challenge</label>
+              <textarea id="item-challenge" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="item-next-step" class="form-label">Next step</label>
+              <textarea id="item-next-step" class="form-control" rows="2"></textarea>
+            </div>
           </div>
 
-          <div class="mb-5">
+          <div class="mb-4">
             <label for="item-evidence" class="form-label">Evidence URLs</label>
             <textarea id="item-evidence" class="form-control" rows="3"></textarea>
             <div class="form-text">One per line, must start with http:// or https://</div>
@@ -131,8 +142,7 @@
 
   </main>
 
-  <script src="js/app.js">
-  </script>
+  <script src="js/app.js"></script>
 
 </body>
 
