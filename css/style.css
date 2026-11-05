@@ -42,13 +42,10 @@ textarea.form-control {
   border-radius: 0.5rem;
 }
 
-#item-list > * {
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 0.5rem;
-}
+  #item-list > *:only-child {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
 
 #item-list a {
   word-break: break-all;
