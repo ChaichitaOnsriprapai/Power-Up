@@ -73,12 +73,3 @@ h1.text-center {
   font-weight: 700;
   color: #111827;
 }
-
-/* ตกแต่งเฉพาะหัวข้อ Reflection ในการ์ดผลงาน */
-#item-list .card-body h4:first-of-type {
-  font-weight: bold !important;
-  border-bottom: 3px solid #b78103 !important; /* สีเหลืองเข้ม */
-  padding-bottom: 0.25rem;
-  display: inline-block;
-  margin-bottom: 0.75rem;
-}
