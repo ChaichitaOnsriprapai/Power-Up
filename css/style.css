@@ -24,7 +24,7 @@ textarea.form-control {
 #profile-info:not(:empty) {
   padding: 1rem;
   margin-bottom: 1.5rem;
-  background: #e7f1ff;
+  background: #e4efff;
   border-radius: 0.5rem;
 }
 
@@ -50,16 +50,16 @@ textarea.form-control {
 }
 
 h1.text-center {
-  background-color: #800020;
+  background-color: #7c001f;
   color: #ffffff; 
-  border: 3px solid #800020;
+  border: 3px solid #7c001f;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   width: 100%;
 }
 
 body {
-  background: #fdf6ec;
+  background: #e4efff;
 }
 
 h1.text-center {
