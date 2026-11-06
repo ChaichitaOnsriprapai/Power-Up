@@ -24,7 +24,7 @@ textarea.form-control {
 #profile-info:not(:empty) {
   padding: 1rem;
   margin-bottom: 1.5rem;
-  background: #e7f1ff;
+  background: #fbf4f4;
   border-radius: 0.5rem;
 }
 
@@ -71,6 +71,6 @@ h1.text-center {
 #profile-info strong,
 #item-list strong {
   font-weight: 700;
-  color: #111827;
+  color: #000000;
 }
 
