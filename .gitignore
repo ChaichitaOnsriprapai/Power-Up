@@ -1,0 +1,4 @@
+local-data/
+*.pem
+*.key
+.env
