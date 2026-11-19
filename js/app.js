@@ -279,3 +279,114 @@ itemForm.addEventListener("submit", function (event) {
 });
 
 renderProfileList();
+
+function validateImportedItem(item) {
+  if (item === null || typeof item !== "object" || Array.isArray(item)) {
+    return "JSON ต้องเป็นผลงาน 1 รายการ";
+  }
+
+  const textFields = [
+    "id", "title", "date", "type", "role", "description"
+  ];
+
+  for (const field of textFields) {
+    if (typeof item[field] !== "string" || item[field].trim() === "") {
+      return field + " ต้องเป็นข้อความและห้ามว่าง";
+    }
+  }
+
+  for (const field of ["skills", "evidence"]) {
+    if (
+      !Array.isArray(item[field]) ||
+      item[field].length === 0 ||
+      !item[field].every(value =>
+        typeof value === "string" && value.trim() !== ""
+      )
+    ) {
+      return field + " ต้องเป็น Array ของข้อความอย่างน้อย 1 รายการ";
+    }
+  }
+
+  if (
+    item.reflection === null ||
+    typeof item.reflection !== "object" ||
+    Array.isArray(item.reflection)
+  ) {
+    return "ต้องมี reflection เป็น Object";
+  }
+
+  const reflectionFields = [
+    "whatIDid", "whatILearned", "challenge", "nextStep"
+  ];
+
+  for (const field of reflectionFields) {
+    if (
+      typeof item.reflection[field] !== "string" ||
+      item.reflection[field].trim() === ""
+    ) {
+      return "reflection." + field + " ต้องเป็นข้อความและห้ามว่าง";
+    }
+  }
+
+  for (const evidence of item.evidence) {
+    try {
+      const url = new URL(evidence);
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
+        return "Evidence URL ต้องใช้ http:// หรือ https://";
+      }
+    } catch {
+      return "Evidence URL ไม่ถูกต้อง";
+    }
+  }
+
+  return "";
+}
+
+$("import-item-form").addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  $("import-errors").textContent = "";
+  $("import-success").textContent = "";
+
+  const currentProfile = profiles.find(p => p.id == activeProfileId);
+
+  if (!currentProfile) {
+    $("import-errors").textContent = "กรุณาสร้างหรือเลือกโปรไฟล์ก่อน";
+    return;
+  }
+
+  let item;
+
+  try {
+    item = JSON.parse($("import-json").value);
+  } catch {
+    $("import-errors").textContent = "รูปแบบ JSON ไม่ถูกต้อง";
+    return;
+  }
+
+  const error = validateImportedItem(item);
+
+  if (error) {
+    $("import-errors").textContent = error;
+    return;
+  }
+
+  if (currentProfile.items.some(existing => existing.id === item.id)) {
+    $("import-errors").textContent = "มี Item ID นี้ในโปรไฟล์แล้ว";
+    return;
+  }
+
+  currentProfile.items.push(item);
+
+  try {
+    await saveProfiles();
+  } catch {
+    currentProfile.items.splice(currentProfile.items.indexOf(item), 1);
+    $("import-errors").textContent = "บันทึกไม่สำเร็จ กรุณาลองใหม่";
+    return;
+  }
+
+  renderItemList();
+  $("import-json").value = "";
+  $("import-success").textContent = "Import ผลงานสำเร็จ!";
+});

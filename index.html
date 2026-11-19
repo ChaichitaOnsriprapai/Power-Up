@@ -134,8 +134,27 @@
       </div>
     </section>
 
+    <section class="container mt-5 mb-5 shadow p-4 rounded-4 bg-light">
+      <h2 class="text-center mb-4">Import Portfolio Item</h2>
+
+      <form id="import-item-form">
+        <div class="mb-3">
+          <label for="import-json" class="form-label">วาง Portfolio Item JSON</label>
+          <textarea id="import-json" class="form-control" rows="10" placeholder="วาง JSON ของผลงาน 1 รายการที่นี่" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mb-3">Import Item</button>
+
+        <p id="import-errors" class="text-danger" role="alert"></p>
+        <p id="import-success" class="text-success" role="status"></p>
+      </form>
+    </section>
+
     <section class="container section-wrap portfolio-section">
-      <div class="section-heading"><div><h2>Your journey so far</h2></div><p class="section-hint">Every project is a step forward.</p></div>
+      <div class="section-heading">
+        <div><h2>Your journey so far</h2></div>
+        <div class="section-hint">Every project is a step forward.</div>
+      </div>
       <div class="surface-card">
       <div id="profile-info" class="mt-3"></div>
       <div id="item-list"></div>
