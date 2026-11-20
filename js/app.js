@@ -75,6 +75,13 @@ function renderItemList() {
           <div class="evidence-links">${item.evidence.map(url => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">View evidence <span aria-hidden="true">↗</span></a>`).join("")}</div>
         </div>
       </div>
+      <button
+          type="button"
+          class="btn btn-outline-primary m-3 export-item-button"
+          data-item-id="${escapeHtml(item.id)}"
+        >
+          Export Item
+        </button>
     </article>`;
   });
 }
@@ -389,4 +396,58 @@ $("import-item-form").addEventListener("submit", async function (event) {
   renderItemList();
   $("import-json").value = "";
   $("import-success").textContent = "Import ผลงานสำเร็จ!";
+});
+
+// แสดงข้อมูลเป็น JSON โดยเก็บ Field เดิมทั้งหมด
+function showExportJson(data) {
+  $("export-errors").textContent = "";
+  $("export-json").value = JSON.stringify(data, null, 2);
+  $("export-success").textContent =
+    "Export สำเร็จ เลือกข้อความในช่องเพื่อคัดลอกได้เลย";
+
+  $("export-json").scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
+
+// Export โปรไฟล์ที่เลือก พร้อมผลงานทั้งหมด
+$("export-portfolio-button").addEventListener("click", function () {
+  $("export-errors").textContent = "";
+  $("export-success").textContent = "";
+  $("export-json").value = "";
+
+  const currentProfile = profiles.find(p => p.id == activeProfileId);
+
+  if (!currentProfile) {
+    $("export-errors").textContent = "กรุณาสร้างหรือเลือกโปรไฟล์ก่อน";
+    return;
+  }
+
+  showExportJson(currentProfile);
+});
+
+// Export ผลงานที่กดเลือก
+$("item-list").addEventListener("click", function (event) {
+  const button = event.target.closest(".export-item-button");
+
+  if (!button) {
+    return;
+  }
+
+  $("export-errors").textContent = "";
+  $("export-success").textContent = "";
+  $("export-json").value = "";
+
+  const currentProfile = profiles.find(p => p.id == activeProfileId);
+  const item = currentProfile?.items.find(
+    item => item.id === button.dataset.itemId
+  );
+
+  if (!item) {
+    $("export-errors").textContent = "ไม่พบผลงานที่ต้องการ Export";
+    return;
+  }
+
+  showExportJson(item);
 });

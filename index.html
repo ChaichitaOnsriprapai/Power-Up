@@ -160,7 +160,41 @@
       <div id="item-list"></div>
       </div>
     </section>
+  
+    <section class="container section-wrap">
+      <div class="section-heading">
+        <div><h2>Export JSON</h2></div>
+      </div>
 
+      <div class="surface-card">
+        <button
+          type="button"
+          id="export-portfolio-button"
+          class="btn btn-primary mb-3"
+        >
+          Export Portfolio
+        </button>
+
+        <div class="mb-3">
+          <label for="export-json" class="form-label">
+            JSON สำหรับคัดลอก
+          </label>
+          <textarea
+            id="export-json"
+            class="form-control"
+            rows="12"
+            readonly
+            placeholder="กด Export เพื่อแสดง JSON ที่นี่"
+          ></textarea>
+          <div class="form-text">
+            
+          </div>
+        </div>
+
+        <p id="export-errors" class="text-danger" role="alert"></p>
+        <p id="export-success" class="text-success" role="status"></p>
+      </div>
+    </section>
   </main>
 
   <script src="js/app.js"></script>
