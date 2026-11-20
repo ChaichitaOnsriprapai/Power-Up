@@ -1,5 +1,5 @@
 <?php
-if (php_sapi_name() === 'cli-server') {
+if (PHP_OS_FAMILY === 'Windows' || php_sapi_name() === 'cli-server' || !is_dir('/var/www')) {
     define('DATA_DIR', __DIR__ . '/../local-data');
 } else {
     define('DATA_DIR', '/var/www/data');

@@ -17,7 +17,8 @@ if ($method === 'POST') {
         sendJson(['error' => 'All profile fields are required'], 400);
     }
 
-    if (mb_strlen($name) > 100) {
+    $nameLength = function_exists('mb_strlen') ? mb_strlen($name) : strlen($name);
+    if ($nameLength > 100) {
         sendJson(['error' => 'name must be 100 characters or fewer'], 400);
     }
 
