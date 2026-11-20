@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $portfolioId = trim($_POST['portfolioId'] ?? '');
+$importId    = trim($_POST['importId'] ?? '');
 $title       = trim($_POST['title'] ?? '');
 $type        = trim($_POST['type'] ?? '');
 $date        = trim($_POST['date'] ?? '');
@@ -54,8 +55,10 @@ foreach ($evidence as $url) {
     }
 }
 
+$itemId = $importId !== '' ? $importId : uniqid('item');
+
 $newItem = [
-    'id'          => uniqid('item'),
+    'id'          => $itemId,
     'title'       => $title,
     'type'        => $type,
     'date'        => $date,
@@ -74,6 +77,14 @@ $newItem = [
 $portfolios = readPortfolios();
 foreach ($portfolios as $index => $portfolio) {
     if (isset($portfolio['id']) && (string) $portfolio['id'] === $portfolioId) {
+        // ตรวจ ID ซ้ำในกรณี Import
+        if ($importId !== '') {
+            foreach ($portfolio['items'] as $existing) {
+                if (isset($existing['id']) && $existing['id'] === $itemId) {
+                    sendJson(['error' => 'Item ID already exists in this portfolio'], 409);
+                }
+            }
+        }
         $portfolios[$index]['items'][] = $newItem;
         if (!writePortfolios($portfolios)) {
             sendJson(['error' => 'Could not save portfolio item'], 500);

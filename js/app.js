@@ -15,19 +15,76 @@ function formatDisplayDate(date) {
   return match ? `${match[3]}-${match[2]}-${match[1]}` : date;
 }
 
-function loadProfiles() {
-  const savedProfiles = localStorage.getItem("profiles");
-  return savedProfiles ? JSON.parse(savedProfiles) : [];
+let profiles = [];
+let activeProfileId = null;
+
+async function loadProfiles() {
+  const res = await fetch("api/portfolios.php");
+  const data = await res.json();
+  profiles.length = 0;
+  data.forEach(p => profiles.push(p));
+  activeProfileId = profiles.length > 0 ? profiles[0].id : null;
 }
 
-function saveProfiles() {
-  localStorage.setItem("profiles", JSON.stringify(profiles));
+async function saveNewProfile(profileData) {
+  const form = new FormData();
+  form.append("name", profileData.name);
+  form.append("whatIEnjoy", profileData.whatIEnjoy);
+  form.append("whatIveTried", profileData.whatIveTried);
+  form.append("whatImCuriousAbout", profileData.whatImCuriousAbout);
+  const res = await fetch("api/portfolios.php", { method: "POST", body: form });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "บันทึกไม่สำเร็จ");
+  return data;
 }
 
-const profiles = loadProfiles();
-let activeProfileId = profiles.length > 0 ? profiles[0].id : null;
+async function saveNewItem(portfolioId, itemData) {
+  const form = new FormData();
+  form.append("portfolioId", portfolioId);
+  form.append("title", itemData.title);
+  form.append("type", itemData.type);
+  form.append("date", itemData.date);
+  form.append("role", itemData.role);
+  form.append("description", itemData.description);
+  form.append("skills", itemData.skills.join(","));
+  form.append("evidence", itemData.evidence.join("\n"));
+  form.append("whatIDid", itemData.reflection.whatIDid);
+  form.append("whatILearned", itemData.reflection.whatILearned);
+  form.append("challenge", itemData.reflection.challenge);
+  form.append("nextStep", itemData.reflection.nextStep);
+  const res = await fetch("api/items.php", { method: "POST", body: form });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "บันทึกไม่สำเร็จ");
+  return data;
+}
+
+async function saveImportedItem(portfolioId, item) {
+  const form = new FormData();
+  form.append("portfolioId", portfolioId);
+  form.append("importId", item.id);
+  form.append("title", item.title);
+  form.append("type", item.type);
+  form.append("date", item.date);
+  form.append("role", item.role);
+  form.append("description", item.description);
+  form.append("skills", item.skills.join(","));
+  form.append("evidence", item.evidence.join("\n"));
+  form.append("whatIDid", item.reflection.whatIDid);
+  form.append("whatILearned", item.reflection.whatILearned);
+  form.append("challenge", item.reflection.challenge);
+  form.append("nextStep", item.reflection.nextStep);
+  const res = await fetch("api/items.php", { method: "POST", body: form });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "บันทึกไม่สำเร็จ");
+  return data;
+}
 const createProfile = $("create-profile-form");
 const createProfileButton = $("create-profile");
+
+async function init() {
+  await loadProfiles();
+  renderProfileList();
+}
 
 function updateCreateProfileButton() {
   const requiredFields = ["name", "what-i-enjoy", "what-ive-tried", "what-im-curious-about"];
@@ -151,7 +208,7 @@ function renderProfileList() {
   renderProfileInfo();
 }
 
-createProfile.addEventListener("submit", function (event) {
+createProfile.addEventListener("submit", async function (event) {
   event.preventDefault();
 
   const name = $("name").value.trim();
@@ -169,17 +226,20 @@ createProfile.addEventListener("submit", function (event) {
   $("profile-success").textContent = "";
 
   const profileData = {
-    id: "profile_" + String(profiles.length + 1).padStart(3, "0"),
     name: name,
     whatIEnjoy: whatIEnjoy,
     whatIveTried: whatIveTried,
-    whatImCuriousAbout: whatImCuriousAbout,
-    items: []
+    whatImCuriousAbout: whatImCuriousAbout
   };
 
-  profiles.push(profileData);
-  saveProfiles();
-  activeProfileId = profileData.id;
+  try {
+    const saved = await saveNewProfile(profileData);
+    profiles.push({ ...saved, items: saved.items ?? [] });
+    activeProfileId = saved.id;
+  } catch (err) {
+    $("profile-errors").textContent = err.message;
+    return;
+  }
 
   renderProfileList();
   createProfile.reset();
@@ -211,7 +271,7 @@ function updateSaveItemButton() {
 });
 updateSaveItemButton();
 
-itemForm.addEventListener("submit", function (event) {
+itemForm.addEventListener("submit", async function (event) {
   event.preventDefault();
 
   const currentProfile = profiles.find((p) => p.id == activeProfileId);
@@ -262,12 +322,8 @@ itemForm.addEventListener("submit", function (event) {
   }
 
   $("item-errors").textContent = "";
-  $("item-success").textContent = "เพิ่มผลงานของคุณ " + currentProfile.name + " สำเร็จ!";
-
-  const itemId = "item_" + String(currentProfile.items.length + 1).padStart(3, "0");
 
   const itemData = {
-    id: itemId,
     title: title,
     date: date,
     type: type,
@@ -278,14 +334,21 @@ itemForm.addEventListener("submit", function (event) {
     evidence: evidence
   };
 
-  currentProfile.items.push(itemData);
-  saveProfiles();
+  try {
+    const saved = await saveNewItem(currentProfile.id, itemData);
+    currentProfile.items.push(saved);
+    $("item-success").textContent = "เพิ่มผลงานของคุณ " + currentProfile.name + " สำเร็จ!";
+  } catch (err) {
+    $("item-errors").textContent = err.message;
+    return;
+  }
+
   renderItemList();
   itemForm.reset();
   updateSaveItemButton();
 });
 
-renderProfileList();
+init();
 
 function validateImportedItem(item) {
   if (item === null || typeof item !== "object" || Array.isArray(item)) {
@@ -383,13 +446,11 @@ $("import-item-form").addEventListener("submit", async function (event) {
     return;
   }
 
-  currentProfile.items.push(item);
-
   try {
-    await saveProfiles();
-  } catch {
-    currentProfile.items.splice(currentProfile.items.indexOf(item), 1);
-    $("import-errors").textContent = "บันทึกไม่สำเร็จ กรุณาลองใหม่";
+    const saved = await saveImportedItem(currentProfile.id, item);
+    currentProfile.items.push(saved);
+  } catch (err) {
+    $("import-errors").textContent = err.message;
     return;
   }
 
