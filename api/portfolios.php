@@ -8,25 +8,33 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    $displayName = trim($_POST['displayName'] ?? '');
+    $name = trim($_POST['name'] ?? '');
     $whatIEnjoy  = trim($_POST['whatIEnjoy'] ?? '');
+    $whatIveTried = trim($_POST['whatIveTried'] ?? '');
+    $whatImCuriousAbout = trim($_POST['whatImCuriousAbout'] ?? '');
 
-    if ($displayName === '' || mb_strlen($displayName) > 100) {
-        sendJson(['error' => 'displayName is required and must be under 100 characters'], 400);
+    if ($name === '' || $whatIEnjoy === '' || $whatIveTried === '' || $whatImCuriousAbout === '') {
+        sendJson(['error' => 'All profile fields are required'], 400);
+    }
+
+    if (mb_strlen($name) > 100) {
+        sendJson(['error' => 'name must be 100 characters or fewer'], 400);
     }
 
     $newPortfolio = [
-        'id'                 => uniqid('p'),
-        'displayName'        => $displayName,
+        'id'                 => uniqid('profile_'),
+        'name'               => $name,
         'whatIEnjoy'         => $whatIEnjoy,
-        'whatIveTried'       => trim($_POST['whatIveTried'] ?? ''),
-        'whatImCuriousAbout' => trim($_POST['whatImCuriousAbout'] ?? ''),
+        'whatIveTried'       => $whatIveTried,
+        'whatImCuriousAbout' => $whatImCuriousAbout,
         'items'              => []
     ];
 
     $portfolios = readPortfolios();
     $portfolios[] = $newPortfolio;
-    writePortfolios($portfolios);
+    if (!writePortfolios($portfolios)) {
+        sendJson(['error' => 'Could not save portfolio data'], 500);
+    }
 
     sendJson($newPortfolio, 201);
 }

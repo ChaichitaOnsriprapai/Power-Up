@@ -43,5 +43,8 @@ function writePortfolios($portfolios) {
         mkdir(DATA_DIR, 0775, true);
     }
     $json = json_encode($portfolios, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    file_put_contents(DATA_FILE, $json);
+    if ($json === false) {
+        return false;
+    }
+    return file_put_contents(DATA_FILE, $json, LOCK_EX) !== false;
 }

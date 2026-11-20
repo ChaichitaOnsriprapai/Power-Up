@@ -9,13 +9,22 @@ $portfolioId = trim($_POST['portfolioId'] ?? '');
 $title       = trim($_POST['title'] ?? '');
 $type        = trim($_POST['type'] ?? '');
 $date        = trim($_POST['date'] ?? '');
-$rawEvidence = trim($_POST['evidence'] ?? '');
+$role        = trim($_POST['role'] ?? '');
+$description = trim($_POST['description'] ?? '');
+$whatIDid    = trim($_POST['whatIDid'] ?? '');
+$whatILearned = trim($_POST['whatILearned'] ?? '');
+$challenge   = trim($_POST['challenge'] ?? '');
+$nextStep    = trim($_POST['nextStep'] ?? '');
 
-if ($portfolioId === '' || $title === '') {
-    sendJson(['error' => 'portfolioId and title are required'], 400);
+if ($portfolioId === '' || $title === '' || $type === '' || $role === '' || $description === '' ||
+    $whatIDid === '' || $whatILearned === '' || $challenge === '' || $nextStep === '') {
+    sendJson(['error' => 'Portfolio, item, and all reflection fields are required'], 400);
 }
-if ($rawEvidence !== '' && filter_var($rawEvidence, FILTER_VALIDATE_URL) === false) {
-    sendJson(['error' => 'evidence must be a valid URL'], 400);
+
+$dateParts = explode('-', $date);
+if (count($dateParts) !== 3 || !checkdate((int) $dateParts[1], (int) $dateParts[2], (int) $dateParts[0]) ||
+    !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+    sendJson(['error' => 'date must be a valid YYYY-MM-DD date'], 400);
 }
 
 $rawSkills = $_POST['skills'] ?? '';
@@ -24,26 +33,51 @@ $skills = array_values(array_filter(
     function ($s) { return $s !== ''; }
 ));
 
+if (count($skills) === 0) {
+    sendJson(['error' => 'At least one skill is required'], 400);
+}
+
+$rawEvidence = trim($_POST['evidence'] ?? '');
+$evidence = array_values(array_filter(array_map('trim', preg_split('/\r?\n/', $rawEvidence)), function ($url) {
+    return $url !== '';
+}));
+
+if (count($evidence) === 0) {
+    sendJson(['error' => 'At least one evidence URL is required'], 400);
+}
+
+foreach ($evidence as $url) {
+    $parts = parse_url($url);
+    if (filter_var($url, FILTER_VALIDATE_URL) === false ||
+        !isset($parts['scheme']) || !in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+        sendJson(['error' => 'Each evidence entry must be a valid HTTP or HTTPS URL'], 400);
+    }
+}
+
 $newItem = [
     'id'          => uniqid('item'),
     'title'       => $title,
     'type'        => $type,
     'date'        => $date,
-    'role'        => trim($_POST['role'] ?? ''),
-    'description' => trim($_POST['description'] ?? ''),
+    'role'        => $role,
+    'description' => $description,
     'skills'      => $skills,
     'reflection'  => [
-        'whatIDid' => trim($_POST['whatIDid'] ?? ''),
-        'nextStep' => trim($_POST['nextStep'] ?? '')
+        'whatIDid' => $whatIDid,
+        'whatILearned' => $whatILearned,
+        'challenge' => $challenge,
+        'nextStep' => $nextStep
     ],
-    'evidence'    => $rawEvidence !== '' ? [$rawEvidence] : []
+    'evidence'    => $evidence
 ];
 
 $portfolios = readPortfolios();
 foreach ($portfolios as $index => $portfolio) {
-    if ($portfolio['id'] === $portfolioId) {
+    if (isset($portfolio['id']) && (string) $portfolio['id'] === $portfolioId) {
         $portfolios[$index]['items'][] = $newItem;
-        writePortfolios($portfolios);
+        if (!writePortfolios($portfolios)) {
+            sendJson(['error' => 'Could not save portfolio item'], 500);
+        }
         sendJson($newItem, 201);
     }
 }
